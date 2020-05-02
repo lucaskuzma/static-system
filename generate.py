@@ -4,6 +4,7 @@
 import os
 import re
 import pathlib
+import shutil
 
 IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
@@ -32,21 +33,17 @@ def templetize_image(file):
 def templetize_dir(path):
 	return f'<a href="{pathlib.Path(path, "index.html")}"/>{path}</a>'
 
+def deploy(inpath, outpath):
+	shutil.copyfile(inpath, outpath)
+
 for root, dirs, files in os.walk(IN_FOLDER):
-    # print(root, "consumes", end=" ")
-    # print(sum(getsize(join(root, name)) for name in files), end=" ")
-    # print("bytes in", len(files), "non-directory files")
 
-	# for dir in dirs: print(dir)
-	# print('--')
-	# print(clean_path(root))
-	# continue
-
-	root = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
+	outroot = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
+	outpath = pathlib.Path(OUT_FOLDER, outroot)
 
 	doc = ['<body>']
 
-	doc.append(templetize_breadcrumbs(root))
+	doc.append(templetize_breadcrumbs(outroot))
 
 	# print(dirs)
 	# print(files)
@@ -59,47 +56,39 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		if item[0] == '.':
 			continue
 
-		# print(file, end=" ")	
-		# print(root, end=" ")
-		# print(os.path.join(root, file))
-
-		# filename, extension = os.path.splitext(item)
-		itempath = pathlib.Path(clean_path(item))
+		cleaned = clean_path(item)
+	
+		itempath = pathlib.Path(cleaned)
 		stem = itempath.stem
 		suffix = itempath.suffix
 
-		# print(cleaned, extension)
+		infull = pathlib.Path(root, item)
+		outfull = pathlib.Path(outpath, cleaned)
 
 		if item in files:
 
 			if suffix == '':
 				doc.append(templetize_header(stem))
 
-			if suffix == '.gif':
-				doc.append(templetize_image(itempath))
+			if suffix == '.gif' or suffix == '.jpg':
+				doc.append(templetize_image(cleaned))
+				deploy(infull, outfull)
 
 		else:
 
 			# make link
-			doc.append(templetize_dir(itempath))
-
-	# indent
-	for _ in range(4 * len(root.parts)):
-		print(' ', end = '')
+			doc.append(templetize_dir(cleaned))
 
 	doc.append('</body>')
 
 	html = ''.join(doc)
-	# print(html)
 
-	outpath = pathlib.Path(OUT_FOLDER, root)
-	outfile = pathlib.Path(OUT_FOLDER, root, 'index.html')
+	outfile = pathlib.Path(outpath, 'index.html')
 
+	# indent and print output file
+	for _ in range(4 * len(outroot.parts)):
+		print(' ', end = '')
 	print(outfile)
-
-	# os.makedirs(os.path.dirname(outfile), exist_ok=True)
-	# with open(outfile, 'w') as file:
-	# 	file.write(html)
 
 	outpath.mkdir(parents=True, exist_ok=True)
 	with outfile.open('w') as file:
