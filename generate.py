@@ -1,4 +1,5 @@
 # check https://pypi.org/project/anytree/
+# consider https://pythonhosted.org/watchdog/quickstart.html#a-simple-example
 
 import os
 import re
@@ -10,8 +11,20 @@ OUT_FOLDER = 'out'
 def clean_path(path):
 	return re.sub('\d+ - ', '', path)
 
-def templetize_header(title):
-	return f'<h1>{title}<h1>'
+def templetize_breadcrumbs(path):
+	out = '<ul>'
+	parts = ('Home', ) + path.parts
+	for i, part in enumerate(parts):
+		if i != len(parts) - 1:
+			href = pathlib.Path('/', *parts[1:i+1], 'index.html')
+			out += f'<li><a href="{href}">{part}<a></li>'
+		else:
+			out += f'<li>{part}</li>'
+	out += '</li>'
+	return out
+
+def templetize_header(text):
+	return f'<h2>{text}<h2>'
 
 def templetize_image(file):
 	return f'<img src="{file}"/>'
@@ -32,6 +45,8 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	root = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
 
 	doc = ['<body>']
+
+	doc.append(templetize_breadcrumbs(root))
 
 	# print(dirs)
 	# print(files)
@@ -66,7 +81,6 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		else:
 
 			# make link
-			print('---', root, '---', itempath)
 			doc.append(templetize_dir(itempath))
 
 	# indent
