@@ -7,17 +7,17 @@ import pathlib
 IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
 
+def clean_path(path):
+	return re.sub('\d+ - ', '', path)
+
 def templetize_header(title):
 	return f'<h1>{title}<h1>'
 
 def templetize_image(file):
 	return f'<img src="{file}"/>'
 
-def templetize_dir(root, dir):
-	return f'<a href="{pathlib.Path(root, dir)}"/>{dir}</a>'
-
-def clean_path(path):
-	return re.sub('\d+ - ', '', path)
+def templetize_dir(path):
+	return f'<a href="{pathlib.Path(path, "index.html")}"/>{path}</a>'
 
 for root, dirs, files in os.walk(IN_FOLDER):
     # print(root, "consumes", end=" ")
@@ -49,26 +49,25 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		# print(os.path.join(root, file))
 
 		# filename, extension = os.path.splitext(item)
-		itempath = pathlib.Path(item)
-		filename = itempath.stem
-		extension = itempath.suffix
+		itempath = pathlib.Path(clean_path(item))
+		stem = itempath.stem
+		suffix = itempath.suffix
 
-		cleaned = clean_path(filename)
-		
 		# print(cleaned, extension)
 
 		if item in files:
 
-			if extension == '':
-				doc.append(templetize_header(cleaned))
+			if suffix == '':
+				doc.append(templetize_header(stem))
 
-			if extension == '.gif':
-				doc.append(templetize_image(cleaned + extension))
+			if suffix == '.gif':
+				doc.append(templetize_image(itempath))
 
 		else:
 
 			# make link
-			doc.append(templetize_dir(root, cleaned))
+			print('---', root, '---', itempath)
+			doc.append(templetize_dir(itempath))
 
 	# indent
 	for _ in range(4 * len(root.parts)):
