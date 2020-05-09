@@ -12,6 +12,12 @@ OUT_FOLDER = 'out'
 def clean_path(path):
 	return re.sub('\d+ - ', '', path)
 
+def block(func):
+    def div(*args):
+        return f'<div>{func(*args)}</div>'
+    return div
+
+@block
 def templetize_breadcrumbs(path):
 	out = '<ul>'
 	parts = ('Home', ) + path.parts
@@ -30,6 +36,7 @@ def templetize_header(text):
 def templetize_image(file):
 	return f'<img src="{file}"/>'
 
+@block
 def templetize_dir(path):
 	return f'<a href="{pathlib.Path(path, "index.html")}"/>{path}</a>'
 
