@@ -41,6 +41,7 @@ def templetize_dir(path):
 	return f'<a href="{pathlib.Path(path, "index.html")}"/>{path}</a>'
 
 def deploy(inpath, outpath):
+	outpath.parents[0].mkdir(parents=True, exist_ok=True)
 	shutil.copyfile(inpath, outpath)
 
 for root, dirs, files in os.walk(IN_FOLDER):
