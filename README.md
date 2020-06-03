@@ -5,6 +5,13 @@ A dead simple site generator, relying on the file system for organization, since
 An exercise in revealing the many inadequacies of the Finder.
 
 
+## Install Dependencies
+
+Outside of getting a recent Python version, this is pretty optional now.
+
+	pipenv install
+	pipenv shell
+
 ## Generate
 
 	python generate.py
