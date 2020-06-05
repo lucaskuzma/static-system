@@ -1,6 +1,7 @@
 # check https://pypi.org/project/anytree/
 # consider https://pythonhosted.org/watchdog/quickstart.html#a-simple-example
 
+import markdown
 import os
 import pathlib
 import re
@@ -45,6 +46,11 @@ def templetize_header(text):
 def templetize_subheader(text):
 	return f'<h2 class="subheader">{text}</h2>'
 
+def templetize_markdown(file):
+	with open(file, 'r') as fp:
+		md = fp.read()
+	return f'<div>{markdown.markdown(md)}</div>'
+
 @block
 def templetize_image(file):
 	return f'<img src="{file} 2x" width="{WIDTH}"/>'
@@ -77,11 +83,17 @@ def deploy_resized(inpath, outpath):
 		image.thumbnail((WIDTH, WIDTH))
 		image.save(outpath, "JPEG")
 
+
+# ****************************************************************************************** parse folder
 for root, dirs, files in os.walk(IN_FOLDER):
 
 	outroot = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
 	outpath = pathlib.Path(OUT_FOLDER, outroot)
 
+	items = dirs + files
+	items.sort()
+
+	# ****************************************************************************************** html
 	doc = ['<html>']
 
 	rootpath = ""
@@ -93,19 +105,30 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 	doc.append(templetize_breadcrumbs(outroot))
 
+	# ****************************************************************************************** content
+
 	doc.append(f'<div class="content">')
 
+	# ****************************************************************************************** header
+
+	doc.append(f'<div class="content-first-cell">')
+	
 	doc.append(templetize_header(outpath.name))
 
+	infopath = os.path.join(root, '- info.md')
+	if os.path.isfile(infopath):
+		doc.append(templetize_markdown(infopath))
+	
+	doc.append('</div>')
+	
 	# print(dirs)
 	# print(files)
 
-	items = dirs + files
-	items.sort()
+	# ****************************************************************************************** items
 
 	for item in items:
 
-		if item[0] == '.':
+		if item[0] in ['.', '-']:
 			continue
 
 		cleaned = clean_path(item)
@@ -117,11 +140,16 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		infull = pathlib.Path(root, item)
 		outfull = pathlib.Path(outpath, cleaned)
 
+		# if a file not a dir
 		if item in files:
+
+			if suffix == '.md':
+				doc.append(templetize_markdown(infull))
 
 			if suffix == '':
 				doc.append(f'</div><div class="content content-latter">')  # start a new grid
-				doc.append(templetize_subheader(stem))
+				if len(stem) > 0:
+					doc.append(templetize_subheader(stem))
 
 			if suffix in ['.gif', '.jpg', '.jpeg', '.png']:
 				doc.append(templetize_image(cleaned))
@@ -139,8 +167,13 @@ for root, dirs, files in os.walk(IN_FOLDER):
 			# make link
 			doc.append(templetize_dir(cleaned))
 
+	# ****************************************************************************************** /items
+	
 	doc.append(f'</div>')  # content
+	# ****************************************************************************************** /content
+
 	doc.append('</body></html>')
+	# ****************************************************************************************** /html
 
 	html = ''.join(doc)
 
