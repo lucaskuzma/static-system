@@ -5,11 +5,18 @@ import os
 import pathlib
 import re
 import shutil
+import sys
 
 from PIL import Image
 
 IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
+
+SKIP_IMAGES = len(sys.argv) > 1 and sys.argv[1] == 'skip_images'
+
+print('')
+if SKIP_IMAGES:
+	print('Skipping images\n')
 
 def clean_path(path):
 	return re.sub('\d+ - ', '', path)
@@ -58,6 +65,8 @@ def deploy(inpath, outpath):
 	shutil.copyfile(inpath, outpath)
 
 def deploy_resized(inpath, outpath):
+	if SKIP_IMAGES:
+		return
 	outpath.parents[0].mkdir(parents=True, exist_ok=True)
 	outpath = outpath.with_suffix('.jpg')
 	with Image.open(inpath) as image:
@@ -140,4 +149,4 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	with outfile.open('w') as file:
 		file.write(html)
 
-
+print('')
