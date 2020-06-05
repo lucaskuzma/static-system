@@ -34,7 +34,7 @@ def block(func):
 	return div
 
 def templetize_breadcrumbs(path):
-	out = '<ul>'
+	out = '<ul class="crumbs">'
 	parts = ('Home', ) + path.parts
 	for i, part in enumerate(parts):
 		if i != len(parts) - 1:
