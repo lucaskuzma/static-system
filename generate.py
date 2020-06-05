@@ -23,6 +23,11 @@ if SKIP_IMAGES:
 def clean_path(path):
 	return re.sub('\d+ - ', '', path)
 
+def hero(func):
+	def div(*args):
+		return f'<div class="content-hero">{func(*args)}</div>'
+	return div
+
 def block(func):
 	def div(*args):
 		return f'<div class="block">{func(*args)}</div>'
