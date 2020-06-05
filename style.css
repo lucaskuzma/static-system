@@ -1,16 +1,15 @@
 body {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: black;
   font-family: 'Podkova', serif;
 }
 
 h1, h2, h3 {
-  margin-left: 80px;
-  margin-bottom: 64px;
+  margin-bottom: 32px;
 }
 
 a {
-	color: white;
+	color: gray;
 	text-decoration: none;
 }
 
@@ -19,7 +18,7 @@ a::before {
   content: "\21DD  ";
 }
 
-.block {
+/*.block {
   margin: auto;
   width: 50%;
 }
@@ -30,4 +29,22 @@ img, iframe, video {
   margin-right: auto;
   margin-top: 32;
   margin-bottom: 32;
+}*/
+
+.content {
+	margin-left: 10%;
+	display: grid;
+	width: calc(1080px + 32px);
+	grid-template-columns: 540 540;
+	grid-gap: 32px;
+}
+
+.content-latter {
+	margin-top: 64px;
+	border-top: 1px solid black;
+}
+
+.content > div {
+	text-align: left;
+	height: 540px;
 }

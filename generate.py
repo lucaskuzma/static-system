@@ -11,6 +11,7 @@ from PIL import Image
 
 IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
+WIDTH = 540
 
 SKIP_IMAGES = len(sys.argv) > 1 and sys.argv[1] == 'skip_images'
 
@@ -39,22 +40,22 @@ def templetize_breadcrumbs(path):
 	return out
 
 def templetize_header(text):
-	return f'<h1>{text}</h1>'
+	return f'<h1 class="header">{text}</h1>'
 
 def templetize_subheader(text):
-	return f'<h2>{text}<h2>'
+	return f'<h2 class="subheader">{text}</h2>'
 
 @block
 def templetize_image(file):
-	return f'<img src="{file} 2x" width="540"/>'
+	return f'<img src="{file} 2x" width="{WIDTH}"/>'
 
 @block
 def templetize_vimeo(id):
-	return f'<iframe src="https://player.vimeo.com/video/{id}?byline=0&portrait=0&title=0" width="540" height="540" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>'
+	return f'<iframe src="https://player.vimeo.com/video/{id}?byline=0&portrait=0&title=0" width="{WIDTH}" height="{WIDTH}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>'
 
 @block
 def templetize_video(file):
-	return f'<video width="320" height="240" controls><source src="{file}" type="video/mp4"></video>'
+	return f'<video width="{WIDTH}" controls><source src="{file}" type="video/mp4"></video>'
 
 @block
 def templetize_dir(path):
@@ -71,9 +72,9 @@ def deploy_resized(inpath, outpath):
 	outpath = outpath.with_suffix('.jpg')
 	with Image.open(inpath) as image:
 		image = image.convert("RGB")
-		image.thumbnail((1080, 1080))
+		image.thumbnail((2 * WIDTH, 2 * WIDTH))
 		image.save(str(outpath) + ' 2x', "JPEG")
-		image.thumbnail((540, 540))
+		image.thumbnail((WIDTH, WIDTH))
 		image.save(outpath, "JPEG")
 
 for root, dirs, files in os.walk(IN_FOLDER):
@@ -81,15 +82,18 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	outroot = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
 	outpath = pathlib.Path(OUT_FOLDER, outroot)
 
-	doc = ['<body>']
+	doc = ['<html>']
 
 	rootpath = ""
 	for _ in range(len(outroot.parts)):
 		rootpath += '../'
 	doc.append(f'<link rel="stylesheet" type="text/css" href="{rootpath}style.css">')
 	doc.append(f'<link href="https://fonts.googleapis.com/css2?family=Podkova&display=swap" rel="stylesheet">')
+	doc.append('<body>')
 
 	doc.append(templetize_breadcrumbs(outroot))
+
+	doc.append(f'<div class="content">')
 
 	doc.append(templetize_header(outpath.name))
 
@@ -116,6 +120,7 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		if item in files:
 
 			if suffix == '':
+				doc.append(f'</div><div class="content content-latter">')  # start a new grid
 				doc.append(templetize_subheader(stem))
 
 			if suffix in ['.gif', '.jpg', '.jpeg', '.png']:
@@ -134,7 +139,8 @@ for root, dirs, files in os.walk(IN_FOLDER):
 			# make link
 			doc.append(templetize_dir(cleaned))
 
-	doc.append('</body>')
+	doc.append(f'</div>')  # content
+	doc.append('</body></html>')
 
 	html = ''.join(doc)
 
