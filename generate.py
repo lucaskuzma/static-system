@@ -119,12 +119,12 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 	doc.append(f'<div class="content-first-cell">')
 	
-	if len(outroot.parts) >= 1:	
-		doc.append(templetize_header(outpath.name))
-
 	headerpath = os.path.join(root, '- header.md')
 	if os.path.isfile(headerpath):
 		doc.append(templetize_markdown(headerpath))
+	else:
+		if len(outroot.parts) >= 1:	
+			doc.append(templetize_header(outpath.name))
 
 	infopath = os.path.join(root, '- info.md')
 	if os.path.isfile(infopath):
