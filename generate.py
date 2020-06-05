@@ -170,14 +170,14 @@ for root, dirs, files in os.walk(IN_FOLDER):
 					doc.append(templetize_subheader(stem))
 
 			if suffix in ['.gif', '.jpg', '.jpeg', '.png']:
-				doc.append(templetize_image(cleaned))
+				doc.append(templetize_image(itempath.with_suffix('.jpg')))
 				deploy_resized(infull, outfull)
 
 			if suffix == '.vimeo':
 				doc.append(templetize_vimeo(stem))
 
 			if suffix == '.mp4':
-				doc.append(templetize_video(cleaned))
+				doc.append(templetize_video(itempath))
 				deploy(infull, outfull)
 
 		else:
