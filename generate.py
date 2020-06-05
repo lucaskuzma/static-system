@@ -108,7 +108,8 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	doc.append(f'<link href="https://fonts.googleapis.com/css2?family=Podkova&display=swap" rel="stylesheet">')
 	doc.append('<body>')
 
-	doc.append(templetize_breadcrumbs(outroot))
+	if len(outroot.parts) >= 1:
+		doc.append(templetize_breadcrumbs(outroot))
 
 	# ****************************************************************************************** content
 
@@ -118,7 +119,12 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 	doc.append(f'<div class="content-first-cell">')
 	
-	doc.append(templetize_header(outpath.name))
+	if len(outroot.parts) >= 1:	
+		doc.append(templetize_header(outpath.name))
+
+	headerpath = os.path.join(root, '- header.md')
+	if os.path.isfile(headerpath):
+		doc.append(templetize_markdown(headerpath))
 
 	infopath = os.path.join(root, '- info.md')
 	if os.path.isfile(infopath):
@@ -130,6 +136,8 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	# print(files)
 
 	# ****************************************************************************************** items
+
+	state = ['']
 
 	for item in items:
 
@@ -147,6 +155,11 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 		# if a file not a dir
 		if item in files:
+
+			# maybe state can just be a boolean, but starting with a stack just in case
+			if state[-1] == 'dir':
+				state.pop()
+				doc.append('</div>')
 
 			if suffix == '.md':
 				doc.append(templetize_markdown(infull))
@@ -168,6 +181,10 @@ for root, dirs, files in os.walk(IN_FOLDER):
 				deploy(infull, outfull)
 
 		else:
+
+			if state[-1] != 'dir':
+				state.append('dir')
+				doc.append('<div>')
 
 			# make link
 			doc.append(templetize_dir(cleaned))
