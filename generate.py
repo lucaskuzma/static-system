@@ -110,6 +110,9 @@ def deploy_resized(inpath, outpath, crop = False):
 # ****************************************************************************************** parse folder
 for root, dirs, files in os.walk(IN_FOLDER):
 
+	if '.git' in root:
+		continue
+
 	outroot = pathlib.Path(clean_path(root)).relative_to(IN_FOLDER)
 	outpath = pathlib.Path(OUT_FOLDER, outroot)
 
