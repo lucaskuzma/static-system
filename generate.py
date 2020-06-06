@@ -9,10 +9,14 @@ import shutil
 import sys
 
 from PIL import Image
+from PIL import ImageEnhance
+from PIL.ImageOps import autocontrast
+from PIL.ImageOps import fit
 
 IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
 WIDTH = 540
+SHORT = 270
 
 SKIP_IMAGES = len(sys.argv) > 1 and sys.argv[1] == 'skip_images'
 
@@ -69,20 +73,34 @@ def templetize_video(file):
 	return f'<video width="{WIDTH}" controls><source src="{file}" type="video/mp4"></video>'
 
 @block
-def templetize_dir(path):
-	return f'<a href="{pathlib.Path(path, "index.html")}"/>{path}</a>'
+def templetize_dir(infull, path, outfull):
+	jpg_thumbpath = os.path.join(infull, '- thumb.jpg')
+	png_thumbpath = os.path.join(infull, '- thumb.png')
+	if os.path.isfile(jpg_thumbpath) or os.path.isfile(png_thumbpath):
+		image = templetize_image(pathlib.Path(path, '- thumb.jpg'))
+		outpath = pathlib.Path(outfull, '- thumb.jpg')
+		deploy_resized(jpg_thumbpath if os.path.isfile(jpg_thumbpath) else png_thumbpath, outpath, True)
+	else:
+		image = ''
+	return f'<a href="{pathlib.Path(path, "index.html")}"/>{image}<p>{path}</p></a>'
 
 def deploy(inpath, outpath):
 	outpath.parents[0].mkdir(parents=True, exist_ok=True)
 	shutil.copyfile(inpath, outpath)
 
-def deploy_resized(inpath, outpath):
+def deploy_resized(inpath, outpath, crop = False):
 	if SKIP_IMAGES:
 		return
 	outpath.parents[0].mkdir(parents=True, exist_ok=True)
 	outpath = outpath.with_suffix('.jpg')
 	with Image.open(inpath) as image:
 		image = image.convert("RGB")
+		if crop:
+			image = fit(image, (2 * WIDTH, WIDTH))
+			image = image.convert("L")
+			# enhancer = ImageEnhance.Brightness(image)
+			# image = enhancer.enhance(2.0)
+			# image = autocontrast(image)
 		image.thumbnail((2 * WIDTH, 2 * WIDTH))
 		image.save(str(outpath) + ' 2x', "JPEG")
 		image.thumbnail((WIDTH, WIDTH))
@@ -137,7 +155,7 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 	# ****************************************************************************************** items
 
-	state = ['']
+	# state = ['']
 
 	for item in items:
 
@@ -157,9 +175,9 @@ for root, dirs, files in os.walk(IN_FOLDER):
 		if item in files:
 
 			# maybe state can just be a boolean, but starting with a stack just in case
-			if state[-1] == 'dir':
-				state.pop()
-				doc.append('</div>')
+			# if state[-1] == 'dir':
+			# 	state.pop()
+			# 	doc.append('</div>')
 
 			if suffix == '.md':
 				doc.append(templetize_markdown(infull))
@@ -182,12 +200,12 @@ for root, dirs, files in os.walk(IN_FOLDER):
 
 		else:
 
-			if state[-1] != 'dir':
-				state.append('dir')
-				doc.append('<div>')
+			# if state[-1] != 'dir':
+			# 	state.append('dir')
+			# 	doc.append('<div>')
 
 			# make link
-			doc.append(templetize_dir(cleaned))
+			doc.append(templetize_dir(infull, cleaned, outfull))
 
 	# ****************************************************************************************** /items
 	
