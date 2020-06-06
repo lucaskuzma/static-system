@@ -96,3 +96,15 @@ a .block img {
 	text-align: left;
 }
 */
+
+
+.copy {
+	font-family: 'Lato', sans-serif;
+	font-weight: lighter;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.copy a {
+	border-bottom: 1px dotted pink;
+}

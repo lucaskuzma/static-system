@@ -58,7 +58,7 @@ def templetize_subheader(text):
 def templetize_markdown(file):
 	with open(file, 'r') as fp:
 		md = fp.read()
-	return f'<div>{markdown.markdown(md)}</div>'
+	return f'<div class="copy">{markdown.markdown(md)}</div>'
 
 @block
 def templetize_image(file):
@@ -123,7 +123,7 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	for _ in range(len(outroot.parts)):
 		rootpath += '../'
 	doc.append(f'<link rel="stylesheet" type="text/css" href="{rootpath}style.css">')
-	doc.append(f'<link href="https://fonts.googleapis.com/css2?family=Podkova&display=swap" rel="stylesheet">')
+	doc.append(f'<link href="https://fonts.googleapis.com/css2?family=Podkova&family=Lato:wght@300&display=swap" rel="stylesheet">')
 	doc.append('<body>')
 
 	if len(outroot.parts) >= 1:
