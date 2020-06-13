@@ -17,8 +17,12 @@ h1, h2, h3 {
   display: inline;
 }
 
-.crumbs li:before { content: " / "; }
+.crumbs li:before { content: " / "; color: gray; }
 .crumbs li:first-child:before { content: ""; }
+
+.crumb {
+	color: gray;
+}
 
 a {
 	color: black;

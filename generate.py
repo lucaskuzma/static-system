@@ -17,6 +17,7 @@ IN_FOLDER = 'in'
 OUT_FOLDER = 'out'
 WIDTH = 540
 SHORT = 270
+GUTTER = 32
 
 SKIP_IMAGES = len(sys.argv) > 1 and sys.argv[1] == 'skip_images'
 
@@ -43,10 +44,10 @@ def templetize_breadcrumbs(path):
 	for i, part in enumerate(parts):
 		if i != len(parts) - 1:
 			href = pathlib.Path('/', *parts[1:i+1], 'index.html')
-			out += f'<li><a href="{href}">{part}</a></li>'
+			out += f'<li><a href="{href}"><span class="crumb">{part}</span></a></li>'
 		else:
 			out += f'<li>{part}</li>'
-	out += '</li>'
+	out += '</li></ul>'
 	return out
 
 def templetize_header(text):
@@ -59,6 +60,10 @@ def templetize_markdown(file):
 	with open(file, 'r') as fp:
 		md = fp.read()
 	return f'<div class="copy">{markdown.markdown(md)}</div>'
+
+@hero
+def templetize_hero_image(file):
+	return f'<img src="{file} 2x" width="{2 * WIDTH + GUTTER}"/>'
 
 @block
 def templetize_image(file):
@@ -106,6 +111,18 @@ def deploy_resized(inpath, outpath, crop = False):
 		image.thumbnail((WIDTH, WIDTH))
 		image.save(outpath, "JPEG")
 
+def deploy_resized_hero(inpath, outpath):
+	if SKIP_IMAGES:
+		return
+	outpath.parents[0].mkdir(parents=True, exist_ok=True)
+	outpath = outpath.with_suffix('.jpg')
+	with Image.open(inpath) as image:
+		image = image.convert("RGB")
+		size = 2 * WIDTH + GUTTER
+		image.thumbnail((2 * size, 2 * size))
+		image.save(str(outpath) + ' 2x', "JPEG")
+		image.thumbnail((size, size))
+		image.save(outpath, "JPEG")
 
 # ****************************************************************************************** parse folder
 for root, dirs, files in os.walk(IN_FOLDER):
@@ -191,8 +208,12 @@ for root, dirs, files in os.walk(IN_FOLDER):
 					doc.append(templetize_subheader(stem))
 
 			if suffix in ['.gif', '.jpg', '.jpeg', '.png']:
-				doc.append(templetize_image(itempath.with_suffix('.jpg')))
-				deploy_resized(infull, outfull)
+				if 'hero' in stem:
+					doc.append(templetize_hero_image(itempath.with_suffix('.jpg')))
+					deploy_resized_hero(infull, outfull)
+				else:
+					doc.append(templetize_image(itempath.with_suffix('.jpg')))
+					deploy_resized(infull, outfull)
 
 			if suffix == '.vimeo':
 				doc.append(templetize_vimeo(stem))
