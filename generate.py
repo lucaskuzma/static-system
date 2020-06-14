@@ -124,6 +124,12 @@ def deploy_resized_hero(inpath, outpath):
 		image.thumbnail((size, size))
 		image.save(outpath, "JPEG")
 
+# ****************************************************************************************** deploy assets
+shutil.copytree(
+	pathlib.Path(IN_FOLDER, '- assets'),
+	pathlib.Path(OUT_FOLDER, 'assets'),
+	dirs_exist_ok=True)
+
 # ****************************************************************************************** parse folder
 for root, dirs, files in os.walk(IN_FOLDER):
 

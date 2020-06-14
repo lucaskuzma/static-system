@@ -112,3 +112,7 @@ a .block img {
 .copy a {
 	border-bottom: 1px dotted pink;
 }
+
+.copy .clean {
+	border-bottom: none;
+}
