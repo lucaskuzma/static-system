@@ -79,9 +79,8 @@ a .block img {
 	grid-gap: 32px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
 	.content {
-		margin-left: 0;
 		grid-template-columns: 540;
 	}
 }
