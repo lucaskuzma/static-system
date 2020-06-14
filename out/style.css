@@ -75,13 +75,13 @@ a .block img {
 	margin-left: 10%;
 	display: grid;
 	width: calc(1080px + 32px);
-	grid-template-columns: 540 540;
+	grid-template-columns: 540px 540px;
 	grid-gap: 32px;
 }
 
 @media (max-width: 1024px) {
 	.content {
-		grid-template-columns: 540;
+		grid-template-columns: 540px;
 	}
 }
 
