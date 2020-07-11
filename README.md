@@ -15,6 +15,7 @@ Outside of getting a recent Python version, this is pretty optional now.
 ## Generate
 
 	python generate.py
+	python generate.py skip_images
 
 
 ## Local Server

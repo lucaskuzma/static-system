@@ -143,7 +143,7 @@ for root, dirs, files in os.walk(IN_FOLDER):
 	items.sort()
 
 	# ****************************************************************************************** html
-	doc = ['<html>']
+	doc = ['<html><meta name="viewport" content="width=device-width, initial-scale=.5">']
 
 	rootpath = ""
 	for _ in range(len(outroot.parts)):
