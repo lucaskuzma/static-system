@@ -1,0 +1,117 @@
+body {
+  background-color: white;
+  color: black;
+  font-family: 'Podkova', serif;
+}
+
+h1, h2, h3 {
+  margin-bottom: 32px;
+}
+
+.crumbs
+{
+	list-style: none;
+}
+
+.crumbs li {
+  display: inline;
+}
+
+.crumbs li:before { content: " / "; color: gray; }
+.crumbs li:first-child:before { content: ""; }
+
+.crumb {
+	color: gray;
+}
+
+a {
+	color: black;
+	text-decoration: none;
+}
+
+a p::before, li a::before {
+  color: pink;
+  content: "\21DD  ";
+}
+
+p {
+	margin-top: 4px;
+}
+
+a .block {
+	margin: calc(540px * .125) calc(540px * .75 * .5);
+	width: calc(540px * .25);
+	height: calc(540px * .25);
+	overflow: hidden;
+	border: 12px solid pink;
+}
+
+a .block img {
+	/*width: calc(540px * .75);*/
+	/*overflow: hidden;*/
+	/*border: 1px solid black;*/
+	opacity: 0.25;
+	position: relative;
+	top: calc(-540px * .25 * .5);
+	left: calc(-540px * .75 * .5);
+}
+
+.block {
+  /*margin: auto;*/
+  /*width: 50%;*/
+  width: 540px;
+}
+
+
+/*img, iframe, video {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 32;
+  margin-bottom: 32;
+}*/
+
+.content {
+	margin-left: 10%;
+	display: grid;
+	width: calc(1080px + 32px);
+	grid-template-columns: 540px 540px;
+	grid-gap: 32px;
+}
+
+@media (max-width: 1024px) {
+	.content {
+		grid-template-columns: 540px;
+	}
+}
+
+.content-latter {
+	margin-top: 64px;
+	border-top: 1px solid black;
+}
+
+.content-hero {
+	grid-column: 1 / 3;
+	text-align: center;
+}
+
+/*.content > div {
+	text-align: left;
+}
+*/
+
+
+.copy p {
+	font-family: 'Lato', sans-serif;
+	font-weight: lighter;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.copy a {
+	border-bottom: 1px dotted pink;
+}
+
+.copy .clean {
+	border-bottom: none;
+}
